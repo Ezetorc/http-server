@@ -35,6 +35,7 @@ HttpResponse: Represents an HTTP response
 
 # Use Concept
 
+```rust
 fn get_user_by_id(request: HttpRequest) -> HttpResponse {
     let id_str = match request.get_parameter("id") {
         Some(id) => id,
@@ -57,3 +58,4 @@ users_route.get("/:id", get_user_by_id);
 server.route(users_route);
 
 server.start();
+```
