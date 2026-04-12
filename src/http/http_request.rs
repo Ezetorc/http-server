@@ -28,6 +28,19 @@ impl HttpRequest {
             http_version: request_line.http_version,
         }
     }
+
+    pub fn get_method(&self) -> HttpMethod {
+        self.method
+    }
+
+    pub fn get_base_path(&self) -> String {
+        self.path
+            .trim_start_matches('/')
+            .split('/')
+            .next()
+            .unwrap_or("")
+            .to_string()
+    }
 }
 
 impl fmt::Display for HttpRequest {

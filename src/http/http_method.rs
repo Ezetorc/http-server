@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::http::http_error::HttpError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum HttpMethod {
     Options,
     Connect,

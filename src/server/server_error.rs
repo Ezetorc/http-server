@@ -8,6 +8,7 @@ pub enum ServerError {
     OutOfBonds,
     InvalidUtf8(FromUtf8Error),
     HttpError(HttpError),
+    EmptyRequest,
 }
 
 impl fmt::Display for ServerError {
@@ -16,6 +17,7 @@ impl fmt::Display for ServerError {
             Self::InputOutput(error) => write!(formatter, "Input/Output Error: {}", error),
             Self::InvalidUtf8(error) => write!(formatter, "Invalid UTF8: {error}"),
             Self::HttpError(error) => write!(formatter, "HTTP Error: {error}"),
+            Self::EmptyRequest => write!(formatter, "Request is empty"),
             Self::OutOfBonds => write!(formatter, "Request size is out of bounds"),
         }
     }
