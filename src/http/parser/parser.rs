@@ -12,7 +12,7 @@ impl HttpParser {
             return Ok(None);
         }
 
-        let http_body: HttpBody = HttpBody::new(body);
+        let http_body: HttpBody = HttpBody::Binary(Vec::from(body));
 
         Ok(Some(http_body))
     }

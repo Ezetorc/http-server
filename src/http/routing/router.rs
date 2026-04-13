@@ -22,7 +22,7 @@ impl HttpRouter {
     pub fn get_matched_handler(
         &self,
         method: HttpMethod,
-        path: &String,
+        path: &str,
     ) -> Option<HttpRequestHandler> {
         let matched_route = self
             .routes

@@ -29,17 +29,21 @@ impl HttpRequest {
         }
     }
 
+    pub fn get_version(&self) -> HttpVersion {
+        self.http_version
+    }
+
     pub fn get_method(&self) -> HttpMethod {
         self.method
     }
 
-    pub fn get_base_path(&self) -> String {
-        self.path
-            .trim_start_matches('/')
-            .split('/')
-            .next()
-            .unwrap_or("")
-            .to_string()
+    pub fn split_path(&self) -> (&str, &str) {
+        let path = self.path.trim_start_matches('/');
+
+        match path.split_once('/') {
+            Some((base, rest)) => (base, rest),
+            None => (path, ""),
+        }
     }
 }
 

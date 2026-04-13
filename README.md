@@ -47,7 +47,7 @@ fn get_user_by_id(request: HttpRequest) -> HttpResponse {
         Err(_) => return HttpResponse::bad_request(),
     };
 
-    HttpResponse::ok().with_body(format!("user {}", id))
+    HttpResponse::new(HttpStatus::Ok).with_body().with_headers()
 }
 
 let server = Server::new(port, address);
