@@ -1,6 +1,7 @@
 use crate::http::{
-    http_body::HttpBody, http_error::HttpError, http_headers::HttpHeaders,
-    http_request_line::HttpRequestLine,
+    content::{body::HttpBody, headers::HttpHeaders},
+    error::HttpError,
+    request::request_line::HttpRequestLine,
 };
 
 pub struct HttpParser;

@@ -1,8 +1,8 @@
 use std::fmt;
 
 use crate::http::{
-    http_body::HttpBody, http_headers::HttpHeaders, http_method::HttpMethod,
-    http_request_line::HttpRequestLine, http_version::HttpVersion,
+    content::{body::HttpBody, headers::HttpHeaders, version::HttpVersion},
+    request::{method::HttpMethod, request_line::HttpRequestLine},
 };
 
 #[derive(Debug)]

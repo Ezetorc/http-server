@@ -1,6 +1,6 @@
 use std::{fmt, io::Error, string::FromUtf8Error};
 
-use crate::http::http_error::HttpError;
+use crate::http::error::HttpError;
 
 #[derive(Debug)]
 pub enum ServerError {

@@ -7,12 +7,15 @@ use std::{
 
 use crate::{
     http::{
-        http_body::HttpBody, http_buffer::HttpBuffer, http_headers::HttpHeaders,
-        http_parser::HttpParser, http_request::HttpRequest,
-        http_request_handler::HttpRequestHandler, http_request_line::HttpRequestLine,
-        http_router::HttpRouter,
+        content::{body::HttpBody, headers::HttpHeaders},
+        parser::{buffer::HttpBuffer, parser::HttpParser},
+        request::{
+            request::HttpRequest, request_handler::HttpRequestHandler,
+            request_line::HttpRequestLine,
+        },
+        routing::router::HttpRouter,
     },
-    server::server_error::ServerError,
+    server::error::ServerError,
 };
 
 pub struct Server {

@@ -1,4 +1,4 @@
-use crate::http::{http_error::HttpError, http_method::HttpMethod, http_version::HttpVersion};
+use crate::http::{content::version::HttpVersion, error::HttpError, request::method::HttpMethod};
 
 pub struct HttpRequestLine {
     pub http_version: HttpVersion,

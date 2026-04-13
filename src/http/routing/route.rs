@@ -1,4 +1,4 @@
-use crate::http::{http_method::HttpMethod, http_request_handler::HttpRequestHandler};
+use crate::http::request::{method::HttpMethod, request_handler::HttpRequestHandler};
 
 #[derive(Debug)]
 pub struct Route {

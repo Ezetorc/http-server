@@ -1,8 +1,11 @@
 use std::sync::Arc;
 
 use crate::{
-    http::{http_request::HttpRequest, http_response::HttpResponse, http_router::HttpRouter},
-    server::{server::Server, server_error::ServerError},
+    http::{
+        request::request::HttpRequest, response::response::HttpResponse,
+        routing::router::HttpRouter,
+    },
+    server::{error::ServerError, server::Server},
 };
 
 mod http;

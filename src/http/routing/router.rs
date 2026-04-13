@@ -1,7 +1,8 @@
 use std::fmt;
 
 use crate::http::{
-    http_method::HttpMethod, http_request_handler::HttpRequestHandler, route::Route,
+    request::{method::HttpMethod, request_handler::HttpRequestHandler},
+    routing::route::Route,
 };
 
 #[derive(Debug)]
