@@ -3,7 +3,7 @@ use std::{fmt, io::Error, string::FromUtf8Error};
 use crate::http::error::HttpError;
 
 #[derive(Debug)]
-pub enum HttpServerError {
+pub enum ServerError {
     InputOutput(Error),
     OutOfBonds,
     InvalidUtf8(FromUtf8Error),
@@ -11,7 +11,7 @@ pub enum HttpServerError {
     EmptyRequest,
 }
 
-impl fmt::Display for HttpServerError {
+impl fmt::Display for ServerError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InputOutput(error) => write!(formatter, "Input/Output Error: {}", error),
@@ -23,19 +23,19 @@ impl fmt::Display for HttpServerError {
     }
 }
 
-impl From<HttpError> for HttpServerError {
+impl From<HttpError> for ServerError {
     fn from(value: HttpError) -> Self {
         Self::HttpError(value)
     }
 }
 
-impl From<FromUtf8Error> for HttpServerError {
+impl From<FromUtf8Error> for ServerError {
     fn from(value: FromUtf8Error) -> Self {
         Self::InvalidUtf8(value)
     }
 }
 
-impl From<Error> for HttpServerError {
+impl From<Error> for ServerError {
     fn from(value: Error) -> Self {
         Self::InputOutput(value)
     }

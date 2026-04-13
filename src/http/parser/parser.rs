@@ -1,32 +1,32 @@
 use crate::http::{
-    content::{body::HttpBody, headers::HttpHeaders},
+    content::{body::Body, headers::Headers},
     error::HttpError,
-    request::request_line::HttpRequestLine,
+    request::request_line::RequestLine,
 };
 
-pub struct HttpParser;
+pub struct Parser;
 
-impl HttpParser {
-    pub fn parse_body(body: &[u8]) -> Result<Option<HttpBody>, HttpError> {
+impl Parser {
+    pub fn parse_body(body: &[u8]) -> Result<Option<Body>, HttpError> {
         if body.len() == 0 {
             return Ok(None);
         }
 
-        let http_body: HttpBody = HttpBody::Binary(Vec::from(body));
+        let http_body: Body = Body::Binary(Vec::from(body));
 
         Ok(Some(http_body))
     }
 
-    pub fn parse_request_line(request_line: &[u8]) -> Result<HttpRequestLine, HttpError> {
+    pub fn parse_request_line(request_line: &[u8]) -> Result<RequestLine, HttpError> {
         let request_line_string: String = String::from_utf8(request_line.to_vec())?;
-        let http_request_line: HttpRequestLine = HttpRequestLine::try_from(request_line_string)?;
+        let http_request_line: RequestLine = RequestLine::try_from(request_line_string)?;
 
         Ok(http_request_line)
     }
 
-    pub fn parse_headers(headers: &[u8]) -> Result<HttpHeaders, HttpError> {
+    pub fn parse_headers(headers: &[u8]) -> Result<Headers, HttpError> {
         let headers_string: String = String::from_utf8(headers.to_vec())?;
-        let http_headers: HttpHeaders = HttpHeaders::from(headers_string);
+        let http_headers: Headers = Headers::from(headers_string);
 
         Ok(http_headers)
     }

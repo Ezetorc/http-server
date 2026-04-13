@@ -1,14 +1,14 @@
-use crate::http::request::{method::HttpMethod, request_handler::HttpRequestHandler};
+use crate::http::request::{method::Method, request_handler::RequestHandler};
 
 #[derive(Debug)]
 pub struct Route {
-    method: HttpMethod,
+    method: Method,
     path: String,
-    handler: HttpRequestHandler,
+    handler: RequestHandler,
 }
 
 impl Route {
-    pub fn new(method: HttpMethod, path: &str, handler: HttpRequestHandler) -> Self {
+    pub fn new(method: Method, path: &str, handler: RequestHandler) -> Self {
         Self {
             method,
             handler,
@@ -16,15 +16,15 @@ impl Route {
         }
     }
 
-    pub fn get_handler(&self) -> HttpRequestHandler {
+    pub fn handler(&self) -> RequestHandler {
         self.handler
     }
 
-    pub fn get_method(&self) -> HttpMethod {
+    pub fn method(&self) -> Method {
         self.method
     }
 
-    pub fn get_path(&self) -> &String {
+    pub fn path(&self) -> &String {
         &self.path
     }
 }

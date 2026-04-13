@@ -1,11 +1,11 @@
 use std::collections::{HashMap, hash_map::Iter};
 
 #[derive(Debug)]
-pub struct HttpHeaders {
+pub struct Headers {
     headers: HashMap<String, String>,
 }
 
-impl HttpHeaders {
+impl Headers {
     pub fn new() -> Self {
         Self {
             headers: HashMap::new(),
@@ -24,12 +24,12 @@ impl HttpHeaders {
         self.headers.insert(key.to_string(), value.to_string());
     }
 
-    pub fn iterate(&self) -> Iter<'_, String, String> {
+    pub fn iter(&self) -> Iter<'_, String, String> {
         self.headers.iter()
     }
 }
 
-impl From<String> for HttpHeaders {
+impl From<String> for Headers {
     fn from(string: String) -> Self {
         let mut headers: HashMap<String, String> = HashMap::new();
 

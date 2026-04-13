@@ -1,17 +1,17 @@
 use std::fmt;
 
 use crate::http::{
-    request::{method::HttpMethod, request_handler::HttpRequestHandler},
+    request::{method::Method, request_handler::RequestHandler},
     routing::route::Route,
 };
 
 #[derive(Debug)]
-pub struct HttpRouter {
+pub struct Router {
     base_path: String,
     routes: Vec<Route>,
 }
 
-impl HttpRouter {
+impl Router {
     pub fn new(base_path: &str) -> Self {
         Self {
             base_path: String::from(base_path.trim_start_matches("/")),
@@ -19,33 +19,29 @@ impl HttpRouter {
         }
     }
 
-    pub fn get_matched_handler(
-        &self,
-        method: HttpMethod,
-        path: &str,
-    ) -> Option<HttpRequestHandler> {
+    pub fn get_handler(&self, method: Method, path: &str) -> Option<RequestHandler> {
         let matched_route = self
             .routes
             .iter()
-            .find(|route| route.get_method() == method && route.get_path() == path);
+            .find(|route| route.method() == method && route.path() == path);
 
         if let Some(route) = matched_route {
-            return Some(route.get_handler());
+            return Some(route.handler());
         }
 
         None
     }
 
-    pub fn on_get(&mut self, path: &str, handler: HttpRequestHandler) {
-        self.routes.push(Route::new(HttpMethod::Get, path, handler));
+    pub fn on_get(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Get, path, handler));
     }
 
-    pub fn get_base_path(&self) -> String {
+    pub fn base_path(&self) -> String {
         self.base_path.trim_start_matches("/").to_string()
     }
 }
 
-impl fmt::Display for HttpRouter {
+impl fmt::Display for Router {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "[HttpRouter '{}']", self.base_path)
     }

@@ -1,20 +1,20 @@
 use crate::http::{
-    content::{body::HttpBody, headers::HttpHeaders, version::HttpVersion},
-    response::status::HttpStatus,
+    content::{body::Body, headers::Headers, version::Version},
+    response::status::Status,
 };
 
 #[derive(Debug)]
-pub struct HttpResponse {
-    version: Option<HttpVersion>,
-    status: HttpStatus,
-    headers: HttpHeaders,
-    body: Option<HttpBody>,
+pub struct Response {
+    version: Option<Version>,
+    status: Status,
+    headers: Headers,
+    body: Option<Body>,
 }
 
-impl HttpResponse {
-    pub fn new(status: HttpStatus) -> Self {
+impl Response {
+    pub fn new(status: Status) -> Self {
         Self {
-            headers: HttpHeaders::new(),
+            headers: Headers::new(),
             version: None,
             body: None,
             status,
@@ -45,7 +45,7 @@ impl HttpResponse {
             None => Vec::new(),
         };
 
-        for (key, value) in self.headers.iterate() {
+        for (key, value) in self.headers.iter() {
             response.extend_from_slice(format!("{}: {}\r\n", key, value).as_bytes());
         }
 
@@ -61,16 +61,16 @@ impl HttpResponse {
         response
     }
 
-    pub fn set_version(&mut self, new_version: HttpVersion) {
+    pub fn set_version(&mut self, new_version: Version) {
         self.version = Some(new_version)
     }
 
-    pub fn with_body(mut self, new_body: HttpBody) -> Self {
+    pub fn with_body(mut self, new_body: Body) -> Self {
         self.body = Some(new_body);
         self
     }
 
-    pub fn with_headers(mut self, new_headers: HttpHeaders) -> Self {
+    pub fn with_headers(mut self, new_headers: Headers) -> Self {
         self.headers = new_headers;
         self
     }

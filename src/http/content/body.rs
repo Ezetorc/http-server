@@ -1,39 +1,32 @@
 #[derive(Debug)]
-pub enum HttpBody {
+pub enum Body {
     Text(String),
     Binary(Vec<u8>),
 }
 
-impl HttpBody {
+impl Body {
     pub fn as_bytes(&self) -> Vec<u8> {
         match self {
             Self::Text(string) => string.as_bytes().to_vec(),
             Self::Binary(bytes) => bytes.clone(),
         }
     }
-
-    pub fn as_string(&self) -> Option<String> {
-        match self {
-            Self::Text(string) => Some(string.clone()),
-            Self::Binary(bytes) => String::from_utf8(bytes.clone()).ok(),
-        }
-    }
 }
 
-impl From<String> for HttpBody {
+impl From<String> for Body {
     fn from(value: String) -> Self {
-        HttpBody::Text(value)
+        Body::Text(value)
     }
 }
 
-impl From<&str> for HttpBody {
+impl From<&str> for Body {
     fn from(value: &str) -> Self {
-        HttpBody::Text(value.to_string())
+        Body::Text(value.to_string())
     }
 }
 
-impl From<Vec<u8>> for HttpBody {
+impl From<Vec<u8>> for Body {
     fn from(value: Vec<u8>) -> Self {
-        HttpBody::Binary(value)
+        Body::Binary(value)
     }
 }

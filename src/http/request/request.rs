@@ -1,39 +1,35 @@
 use std::fmt;
 
 use crate::http::{
-    content::{body::HttpBody, headers::HttpHeaders, version::HttpVersion},
-    request::{method::HttpMethod, request_line::HttpRequestLine},
+    content::{body::Body, headers::Headers, version::Version},
+    request::{method::Method, request_line::RequestLine},
 };
 
 #[derive(Debug)]
-pub struct HttpRequest {
-    http_version: HttpVersion,
-    headers: HttpHeaders,
-    method: HttpMethod,
-    body: Option<HttpBody>,
+pub struct Request {
+    version: Version,
+    headers: Headers,
+    method: Method,
+    body: Option<Body>,
     path: String,
 }
 
-impl HttpRequest {
-    pub fn from(
-        request_line: HttpRequestLine,
-        headers: HttpHeaders,
-        body: Option<HttpBody>,
-    ) -> Self {
+impl Request {
+    pub fn from(request_line: RequestLine, headers: Headers, body: Option<Body>) -> Self {
         Self {
             body,
             headers,
             path: request_line.path,
             method: request_line.method,
-            http_version: request_line.http_version,
+            version: request_line.version,
         }
     }
 
-    pub fn get_version(&self) -> HttpVersion {
-        self.http_version
+    pub fn version(&self) -> Version {
+        self.version
     }
 
-    pub fn get_method(&self) -> HttpMethod {
+    pub fn method(&self) -> Method {
         self.method
     }
 
@@ -47,12 +43,12 @@ impl HttpRequest {
     }
 }
 
-impl fmt::Display for HttpRequest {
+impl fmt::Display for Request {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             formatter,
-            "[HttpRequest]: {} {} {}",
-            self.method, self.path, self.http_version
+            "[Request]: {} {} {}",
+            self.method, self.path, self.version
         )
     }
 }

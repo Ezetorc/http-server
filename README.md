@@ -10,14 +10,14 @@
 # Entities
 
 Server: Listen and read connections
-HttpParser: Parse a string, converting it into an HttpRequest
-HttpRequest: Represents an HTTP request
+HttpParser: Parse a string, converting it into an Request
+Request: Represents an HTTP request
 - Method
 - Path
 - Headers
 - HTTP Version
 - Body (optional)
-HttpResponse: Represents an HTTP response
+Response: Represents an HTTP response
 - Methods to build response
 - When received by x function, it would transform itself into plain text,
   and then into bytes, to be retrieved to the client
@@ -28,26 +28,26 @@ HttpResponse: Represents an HTTP response
 0. User sets routes via HttpRouter
 1. Server reads a connection
 2. Server converts connection's bytes to string, getting headers and body (optional)
-3. HttpParser converts string to HttpRequest
-4. Server matches HttpRequest's method and path to pre-settled handler (if not found, returns 404 Not Found)
+3. HttpParser converts string to Request
+4. Server matches Request's method and path to pre-settled handler (if not found, returns 404 Not Found)
 5. Matched handler uses the request to create a response
-6. Server retrieves HttpResponse converted into bytes
+6. Server retrieves Response converted into bytes
 
 # Use Concept
 
 ```rust
-fn get_user_by_id(request: HttpRequest) -> HttpResponse {
+fn get_user_by_id(request: Request) -> Response {
     let id_str = match request.get_parameter("id") {
         Some(id) => id,
-        None => return HttpResponse::bad_request(),
+        None => return Response::bad_request(),
     };
 
     let id: u32 = match id_str.parse() {
         Ok(id) => id,
-        Err(_) => return HttpResponse::bad_request(),
+        Err(_) => return Response::bad_request(),
     };
 
-    HttpResponse::new(HttpStatus::Ok).with_body().with_headers()
+    Response::new(HttpStatus::Ok).with_body().with_headers()
 }
 
 let server = Server::new(port, address);

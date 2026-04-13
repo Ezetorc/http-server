@@ -1,3 +1,3 @@
-use crate::http::{request::request::HttpRequest, response::response::HttpResponse};
+use crate::http::{request::request::Request, response::response::Response};
 
-pub type HttpRequestHandler = fn(request: HttpRequest) -> HttpResponse;
+pub type RequestHandler = fn(request: Request) -> Response;

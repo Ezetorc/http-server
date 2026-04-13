@@ -2,34 +2,34 @@ use std::sync::Arc;
 
 use crate::{
     http::{
-        request::request::HttpRequest,
-        response::{response::HttpResponse, status::HttpStatus},
-        routing::router::HttpRouter,
+        request::request::Request,
+        response::{response::Response, status::Status},
+        routing::router::Router,
     },
-    server::{error::HttpServerError, server::HttpServer},
+    server::{error::ServerError, server::Server},
 };
 
 mod http;
 mod server;
 
-fn get_juan(request: HttpRequest) -> HttpResponse {
+fn get_juan(request: Request) -> Response {
     println!("get juan {request}");
 
-    HttpResponse::new(HttpStatus::Ok)
+    Response::new(Status::Ok)
         .with_body("hola".into())
         .with_header("x-lol", "tremenedo")
 }
 
 fn main() {
-    let mut server: HttpServer = HttpServer::new("127.0.0.1", "8080");
-    let mut users_router: HttpRouter = HttpRouter::new("/users");
+    let mut server: Server = Server::new("127.0.0.1", "8080");
+    let mut users_router: Router = Router::new("/users");
 
     users_router.on_get("/juan", get_juan);
 
     server.route(users_router);
 
-    let server: Arc<HttpServer> = Arc::new(server);
-    let result: Result<(), HttpServerError> = server.start();
+    let server: Arc<Server> = Arc::new(server);
+    let result: Result<(), ServerError> = server.start();
 
     match result {
         Ok(()) => println!("# Server stopped #"),

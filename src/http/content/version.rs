@@ -3,23 +3,23 @@ use std::fmt;
 use crate::http::error::HttpError;
 
 #[derive(Debug, Clone, Copy)]
-pub enum HttpVersion {
+pub enum Version {
     Http11,
     Http2,
     Http3,
 }
 
-impl HttpVersion {
+impl Version {
     pub fn as_str(&self) -> &str {
         match self {
-            HttpVersion::Http11 => "HTTP/1.1",
-            HttpVersion::Http2 => "HTTP/2",
-            HttpVersion::Http3 => "HTTP/3",
+            Self::Http11 => "HTTP/1.1",
+            Self::Http2 => "HTTP/2",
+            Self::Http3 => "HTTP/3",
         }
     }
 }
 
-impl fmt::Display for HttpVersion {
+impl fmt::Display for Version {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let version: &str = self.as_str();
 
@@ -27,7 +27,7 @@ impl fmt::Display for HttpVersion {
     }
 }
 
-impl TryFrom<&str> for HttpVersion {
+impl TryFrom<&str> for Version {
     type Error = HttpError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {

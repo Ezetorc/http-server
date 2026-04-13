@@ -1,11 +1,11 @@
 use memchr::memmem;
 
-pub struct HttpBuffer {
+pub struct Buffer {
     value: Vec<u8>,
     headers_end: Option<usize>,
 }
 
-impl HttpBuffer {
+impl Buffer {
     pub const MAX_HEADERS_BYTES: usize = 8192;
     pub const HEADERS_END_PATTERN: &[u8; 4] = b"\r\n\r\n";
 
@@ -51,7 +51,7 @@ impl HttpBuffer {
         let headers_end: Option<usize> = self
             .value
             .windows(4)
-            .position(|window| window == HttpBuffer::HEADERS_END_PATTERN);
+            .position(|window| window == Self::HEADERS_END_PATTERN);
 
         if let Some(position) = headers_end {
             return Some(position + 4);

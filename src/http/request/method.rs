@@ -3,7 +3,7 @@ use std::fmt;
 use crate::http::error::HttpError;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum HttpMethod {
+pub enum Method {
     Options,
     Connect,
     Delete,
@@ -15,7 +15,7 @@ pub enum HttpMethod {
     Put,
 }
 
-impl TryFrom<&str> for HttpMethod {
+impl TryFrom<&str> for Method {
     type Error = HttpError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
@@ -34,7 +34,7 @@ impl TryFrom<&str> for HttpMethod {
     }
 }
 
-impl fmt::Display for HttpMethod {
+impl fmt::Display for Method {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let method = match self {
             Self::Get => "GET",

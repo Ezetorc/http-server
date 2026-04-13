@@ -1,12 +1,12 @@
-use crate::http::{content::version::HttpVersion, error::HttpError, request::method::HttpMethod};
+use crate::http::{content::version::Version, error::HttpError, request::method::Method};
 
-pub struct HttpRequestLine {
-    pub http_version: HttpVersion,
-    pub method: HttpMethod,
+pub struct RequestLine {
+    pub version: Version,
+    pub method: Method,
     pub path: String,
 }
 
-impl TryFrom<String> for HttpRequestLine {
+impl TryFrom<String> for RequestLine {
     type Error = HttpError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
@@ -16,9 +16,9 @@ impl TryFrom<String> for HttpRequestLine {
         let version: &str = parts.next().unwrap_or_default();
 
         Ok(Self {
-            method: HttpMethod::try_from(method)?,
+            method: Method::try_from(method)?,
             path: path.to_string(),
-            http_version: HttpVersion::try_from(version)?,
+            version: Version::try_from(version)?,
         })
     }
 }
