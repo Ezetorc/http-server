@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::http::{
     content::{body::Body, headers::Headers},
     error::HttpError,
@@ -29,5 +31,18 @@ impl Parser {
         let http_headers: Headers = Headers::from(headers_string);
 
         Ok(http_headers)
+    }
+
+    pub fn parse_query_parameters(queries: &str) -> HashMap<String, String> {
+        let mut query_parameters: HashMap<String, String> = HashMap::new();
+        let segments = queries.split("&");
+
+        for segment in segments {
+            if let Some((key, value)) = segment.split_once("=") {
+                query_parameters.insert(key.to_string(), value.to_string());
+            }
+        }
+
+        query_parameters
     }
 }

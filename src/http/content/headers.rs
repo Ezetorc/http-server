@@ -1,4 +1,9 @@
-use std::collections::{HashMap, hash_map::Iter};
+use std::{
+    collections::{HashMap, hash_map::Iter},
+    str::FromStr,
+};
+
+use crate::http::response::content_type::ContentType;
 
 #[derive(Debug)]
 pub struct Headers {
@@ -6,6 +11,9 @@ pub struct Headers {
 }
 
 impl Headers {
+    pub const CONTENT_LENGTH: &str = "Content-Length";
+    pub const CONTENT_TYPE: &str = "Content-Type";
+
     pub fn new() -> Self {
         Self {
             headers: HashMap::new(),
@@ -13,7 +21,19 @@ impl Headers {
     }
 
     pub fn get(&self, header_name: &str) -> Option<&String> {
-        self.headers.get(header_name)
+        self.headers.get(header_name.to_lowercase().as_str())
+    }
+
+    pub fn get_as<Type>(&self, header_name: &str) -> Option<Type>
+    where
+        Type: FromStr,
+    {
+        self.get(header_name)
+            .and_then(|value| value.parse::<Type>().ok())
+    }
+
+    pub fn set_content_type(&mut self, content_type: ContentType) {
+        self.add(Self::CONTENT_TYPE, content_type.as_str());
     }
 
     pub fn has(&self, header_name: &str) -> bool {

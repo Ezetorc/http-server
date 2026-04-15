@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::{
     http::{
         request::request::Request,
-        response::{response::Response, status::Status},
+        response::{handler_result::HandlerResult, response::Response, status::Status},
         routing::router::Router,
     },
     server::{error::ServerError, server::Server},
@@ -12,19 +12,34 @@ use crate::{
 mod http;
 mod server;
 
-fn get_juan(request: Request) -> Response {
-    println!("get juan {request}");
+fn get_user_by_id(request: Request) -> HandlerResult {
+    let id: String = request.get_parameter_or_error("id")?;
+    let lol: String = request.get_query_or_error("lol")?;
 
-    Response::new(Status::Ok)
-        .with_body("hola".into())
-        .with_header("x-lol", "tremenedo")
+    println!("get_user_by_id: {request}:: {} {}", id, lol);
+
+    Ok(Response::new(Status::Ok)
+        .with_json("{ 'chat': 'esto es real' }")
+        .with_header("x-lol", "tremenedo"))
+}
+
+fn get_juan_by_id(request: Request) -> HandlerResult {
+    let id: String = request.get_parameter_or_error("id")?;
+    let lol: String = request.get_query_or_error("lol")?;
+
+    println!("get_juan_by_id: {request}:: {} {}", id, lol);
+
+    Ok(Response::new(Status::Ok)
+        .with_json("{ 'chat': 'esto es real' }")
+        .with_header("x-lol", "tremenedo"))
 }
 
 fn main() {
     let mut server: Server = Server::new("127.0.0.1", "8080");
     let mut users_router: Router = Router::new("/users");
 
-    users_router.on_get("/juan", get_juan);
+    users_router.on_get("/:id", get_user_by_id);
+    users_router.on_get("/juan/:id", get_juan_by_id);
 
     server.route(users_router);
 

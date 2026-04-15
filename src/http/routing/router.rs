@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 use crate::http::{
     request::{method::Method, request_handler::RequestHandler},
@@ -7,26 +7,53 @@ use crate::http::{
 
 #[derive(Debug)]
 pub struct Router {
-    base_path: String,
+    path: String,
     routes: Vec<Route>,
 }
 
 impl Router {
-    pub fn new(base_path: &str) -> Self {
+    pub fn new(path: &str) -> Self {
         Self {
-            base_path: String::from(base_path.trim_start_matches("/")),
+            path: String::from(path.trim_start_matches("/")),
             routes: Vec::new(),
         }
     }
 
-    pub fn get_handler(&self, method: Method, path: &str) -> Option<RequestHandler> {
-        let matched_route = self
-            .routes
-            .iter()
-            .find(|route| route.method() == method && route.path() == path);
+    pub fn get_handler(
+        &self,
+        method: Method,
+        segments: &[&str],
+    ) -> Option<(RequestHandler, HashMap<String, String>)> {
+        for route in &self.routes {
+            if route.method() != method {
+                continue;
+            }
 
-        if let Some(route) = matched_route {
-            return Some(route.handler());
+            let route_segments: Vec<&str> = route.path().split('/').collect();
+
+            if route_segments.len() != segments.len() {
+                continue;
+            }
+
+            let mut parameters: HashMap<String, String> = HashMap::new();
+            let mut matched: bool = true;
+            let iterator = route_segments.iter().zip(segments.iter());
+
+            for (route_segment, request_segment) in iterator {
+                if route_segment.starts_with(":") {
+                    let key = route_segment.trim_start_matches(":");
+
+                    parameters.insert(key.to_string(), request_segment.to_string());
+                } else if route_segment != request_segment {
+                    matched = false;
+
+                    break;
+                }
+            }
+
+            if matched {
+                return Some((route.handler(), parameters));
+            }
         }
 
         None
@@ -36,13 +63,13 @@ impl Router {
         self.routes.push(Route::new(Method::Get, path, handler));
     }
 
-    pub fn base_path(&self) -> String {
-        self.base_path.trim_start_matches("/").to_string()
+    pub fn path(&self) -> String {
+        self.path.trim_start_matches("/").to_string()
     }
 }
 
 impl fmt::Display for Router {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "[HttpRouter '{}']", self.base_path)
+        write!(formatter, "[Router '{}']", self.path)
     }
 }

@@ -33,7 +33,42 @@ Response: Represents an HTTP response
 5. Matched handler uses the request to create a response
 6. Server retrieves Response converted into bytes
 
-# Use Concept
+# Path parsing
+
+1) Divide path and query
+> Found: /users/123?detailed=true&lol=12
+> Result: users/123 | detailed=true&lol=12
+
+2) Divide path in segments
+> Found: /users/123
+> Result: "users", "123"
+
+3) Compare path segments and route segments length
+> Route: /users/:id     > 2 Segments
+> Found: /users/123/jaja > 3 Segments
+> Result: False (not same amount of segments)
+
+4) Compare segments
+```rust
+for segment in segments:
+  if routerSegment starts_with ":":
+    save_as_param(segment)
+  else:
+    if segment != routerSegment:
+        continue
+```
+
+5) Parse query params
+> Found: detailed=true&lolazo=12
+> Result: { "detailed": "true", "lolazo": "12" }
+
+6) Save in request
+> request.set_query_parameters(query_parameters)
+> request.set_path_parameters(path_parameters)
+
+7) If NO route matched, return 404 Not found
+
+# Initial Use Concept
 
 ```rust
 fn get_user_by_id(request: Request) -> Response {
