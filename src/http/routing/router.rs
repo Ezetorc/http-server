@@ -2,10 +2,9 @@ use std::{collections::HashMap, fmt};
 
 use crate::http::{
     request::{method::Method, request_handler::RequestHandler},
-    routing::route::Route,
+    routing::{route::Route, route_builder::RouteBuilder},
 };
 
-#[derive(Debug)]
 pub struct Router {
     path: String,
     routes: Vec<Route>,
@@ -19,11 +18,11 @@ impl Router {
         }
     }
 
-    pub fn get_handler(
+    pub fn get_route(
         &self,
         method: Method,
         segments: &[&str],
-    ) -> Option<(RequestHandler, HashMap<String, String>)> {
+    ) -> Option<(&Route, HashMap<String, String>)> {
         for route in &self.routes {
             if route.method() != method {
                 continue;
@@ -52,51 +51,67 @@ impl Router {
             }
 
             if matched {
-                return Some((route.handler(), parameters));
+                return Some((route, parameters));
             }
         }
 
         None
     }
 
-    pub fn on_get(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Get, path, handler));
-    }
-
-    pub fn on_post(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Post, path, handler));
-    }
-
-    pub fn on_put(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Put, path, handler));
-    }
-
-    pub fn on_delete(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Delete, path, handler));
-    }
-
-    pub fn on_patch(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Patch, path, handler));
-    }
-
-    pub fn on_head(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Head, path, handler));
-    }
-
-    pub fn on_options(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Options, path, handler));
-    }
-
-    pub fn on_connect(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Connect, path, handler));
-    }
-
-    pub fn on_trace(&mut self, path: &str, handler: RequestHandler) {
-        self.routes.push(Route::new(Method::Trace, path, handler));
+    pub fn get_mutable_route(&mut self, index: usize) -> &mut Route {
+        &mut self.routes[index]
     }
 
     pub fn path(&self) -> String {
         self.path.trim_start_matches("/").to_string()
+    }
+
+    pub fn on_method<'a>(
+        &'a mut self,
+        path: &str,
+        handler: RequestHandler,
+        method: Method,
+    ) -> RouteBuilder<'a> {
+        let route: Route = Route::new(method, path, handler);
+        self.routes.push(route);
+        let index: usize = self.routes.len() - 1;
+
+        RouteBuilder::new(self, index)
+    }
+
+    pub fn on_get<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Get)
+    }
+
+    pub fn on_post<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Post)
+    }
+
+    pub fn on_put<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Put)
+    }
+
+    pub fn on_delete<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Delete)
+    }
+
+    pub fn on_patch<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Patch)
+    }
+
+    pub fn on_head<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Head)
+    }
+
+    pub fn on_options<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Options)
+    }
+
+    pub fn on_connect<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Connect)
+    }
+    pub fn on_trace<'a>(&'a mut self, path: &str, handler: RequestHandler) -> RouteBuilder<'a> {
+        self.on_method(path, handler, Method::Trace)
     }
 }
 

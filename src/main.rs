@@ -7,7 +7,6 @@ use crate::{
         routing::router::Router,
     },
     server::{
-        error::ServerError,
         middleware::{middleware_result::MiddlewareResult, next_fn::NextFn},
         server::Server,
     },
@@ -16,40 +15,67 @@ use crate::{
 mod http;
 mod server;
 
+// =======================
+// 🧠 HANDLER
+// =======================
 fn get_user_by_id(request: Request) -> HandlerResult {
-    let x_lol: String = request.get_header_or_error("x-auth")?;
+    let user_id: String = request.get_parameter_or_error("id")?;
+    let auth: String = request.get_header_or_error("x-auth")?;
 
-    println!("get_user_by_id: {request} | {x_lol}");
+    println!("User ID: {user_id}");
+    println!("Auth: {auth}");
 
     Ok(Response::new(Status::Ok)
-        .with_json("{ 'chat': 'esto es real' }")
-        .with_header("x-lol", "tremenedo"))
+        .with_json(format!("{{ \"user_id\": \"{}\" }}", user_id).as_str())
+        .with_header("x-powered-by", "rust-server"))
 }
 
+// =======================
+// 🔐 GLOBAL MIDDLEWARE
+// =======================
 fn auth_middleware(request: &mut Request, next: NextFn) -> MiddlewareResult {
-    request.set_header("x-auth", "la madafucking autenticacion");
+    println!("[auth_middleware] running");
 
-    if true {
-        next()
-    } else {
-        Err(Response::new(Status::Conflict))
-    }
+    // Simulate authentication
+    request.set_header("x-auth", "authenticated-user");
+
+    next()
 }
 
+// =======================
+// 🧩 ROUTE MIDDLEWARE
+// =======================
+fn validate_id_middleware(request: &mut Request, next: NextFn) -> MiddlewareResult {
+    println!("[validate_id_middleware] running");
+
+    let id: String = request.get_parameter_or_error("id")?;
+
+    if id.parse::<u32>().is_err() {
+        return Err(
+            Response::new(Status::BadRequest).with_json("{ \"error\": \"id must be numeric\" }")
+        );
+    }
+
+    next()
+}
+
+// =======================
+// 🚀 ENTRY POINT
+// =======================
 fn main() {
     let mut server: Server = Server::new("127.0.0.1", "8080");
     let mut users_router: Router = Router::new("/users");
 
+    users_router
+        .on_get("/:id", get_user_by_id)
+        .with(Box::new(validate_id_middleware));
+    
     server.use_middleware(Box::new(auth_middleware));
-
-    users_router.on_get("/:id", get_user_by_id);
-
     server.route(users_router);
 
     let server: Arc<Server> = Arc::new(server);
-    let result: Result<(), ServerError> = server.start();
 
-    match result {
+    match server.start() {
         Ok(()) => println!("# Server stopped #"),
         Err(error) => println!("{error}"),
     }

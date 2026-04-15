@@ -10,7 +10,10 @@ use crate::{
     http::{
         content::{body::Body, headers::Headers, version::Version},
         parser::{buffer::Buffer, parser::Parser},
-        request::{method::Method, request::Request, request_line::RequestLine},
+        request::{
+            method::Method, request::Request, request_handler::RequestHandler,
+            request_line::RequestLine,
+        },
         response::{handler_result::HandlerResult, response::Response, status::Status},
         routing::router::Router,
     },
@@ -114,14 +117,20 @@ impl Server {
 
         let method: Method = request.method();
         let sub_segments: &[&str] = &segments[1..];
-        if let Some((request_handler, parameters)) = router.get_handler(method, sub_segments) {
+
+        if let Some((route, parameters)) = router.get_route(method, sub_segments) {
             let version: Version = request.version();
             let query_parameters: HashMap<String, String> = Parser::parse_query_parameters(queries);
 
             request.set_query_parameters(query_parameters);
             request.set_path_parameters(parameters);
 
-            let result: HandlerResult = request_handler(request);
+            if let Err(response) = route.run_middlewares(&mut request) {
+                return Ok(response);
+            }
+
+            let handler: RequestHandler = route.handler();
+            let result: HandlerResult = handler(request);
 
             match result {
                 Ok(mut response) => {
