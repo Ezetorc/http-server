@@ -6,40 +6,43 @@ use crate::{
         response::{handler_result::HandlerResult, response::Response, status::Status},
         routing::router::Router,
     },
-    server::{error::ServerError, server::Server},
+    server::{
+        error::ServerError,
+        middleware::{middleware_result::MiddlewareResult, next_fn::NextFn},
+        server::Server,
+    },
 };
 
 mod http;
 mod server;
 
 fn get_user_by_id(request: Request) -> HandlerResult {
-    let id: String = request.get_parameter_or_error("id")?;
-    let lol: String = request.get_query_or_error("lol")?;
+    let x_lol: String = request.get_header_or_error("x-auth")?;
 
-    println!("get_user_by_id: {request}:: {} {}", id, lol);
+    println!("get_user_by_id: {request} | {x_lol}");
 
     Ok(Response::new(Status::Ok)
         .with_json("{ 'chat': 'esto es real' }")
         .with_header("x-lol", "tremenedo"))
 }
 
-fn get_juan_by_id(request: Request) -> HandlerResult {
-    let id: String = request.get_parameter_or_error("id")?;
-    let lol: String = request.get_query_or_error("lol")?;
+fn auth_middleware(request: &mut Request, next: NextFn) -> MiddlewareResult {
+    request.set_header("x-auth", "la madafucking autenticacion");
 
-    println!("get_juan_by_id: {request}:: {} {}", id, lol);
-
-    Ok(Response::new(Status::Ok)
-        .with_json("{ 'chat': 'esto es real' }")
-        .with_header("x-lol", "tremenedo"))
+    if true {
+        next()
+    } else {
+        Err(Response::new(Status::Conflict))
+    }
 }
 
 fn main() {
     let mut server: Server = Server::new("127.0.0.1", "8080");
     let mut users_router: Router = Router::new("/users");
 
+    server.use_middleware(Box::new(auth_middleware));
+
     users_router.on_get("/:id", get_user_by_id);
-    users_router.on_get("/juan/:id", get_juan_by_id);
 
     server.route(users_router);
 

@@ -94,3 +94,10 @@ server.route(users_route);
 
 server.start();
 ```
+
+type MiddlewareResult = Result<(), Response>
+type NextFn = fn() => ()
+
+fn middleware(request: Request, next: NextFn) -> MiddlewareResult {
+
+}

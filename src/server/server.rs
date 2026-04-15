@@ -14,13 +14,17 @@ use crate::{
         response::{handler_result::HandlerResult, response::Response, status::Status},
         routing::router::Router,
     },
-    server::error::ServerError,
+    server::{
+        error::ServerError,
+        middleware::{middleware::Middleware, middleware_result::MiddlewareResult},
+    },
 };
 
 pub struct Server {
     pub port: String,
     pub host: String,
     routers: Vec<Router>,
+    middlewares: Vec<Middleware>,
 }
 
 impl Server {
@@ -31,6 +35,7 @@ impl Server {
             host: String::from(host),
             port: String::from(port),
             routers: Vec::new(),
+            middlewares: Vec::new(),
         }
     }
 
@@ -64,8 +69,38 @@ impl Server {
         Ok(())
     }
 
+    fn run_middleware(middlewares: &[Middleware], request: *mut Request) -> MiddlewareResult {
+        if middlewares.is_empty() {
+            return Ok(());
+        }
+
+        let (current, rest) = middlewares.split_first().unwrap();
+
+        let mut next = {
+            let request = request;
+
+            move || Self::run_middleware(rest, request)
+        };
+
+        let req = unsafe { &mut *request };
+
+        current(req, &mut next)
+    }
+
+    fn run_middlewares(&self, request: &mut Request) -> MiddlewareResult {
+        let request_ptr = request as *mut Request;
+
+        Self::run_middleware(&self.middlewares, request_ptr)?;
+        Ok(())
+    }
+
     fn handle_connection(&self, stream: &mut TcpStream) -> Result<Response, ServerError> {
         let mut request: Request = Self::build_request_from_stream(stream)?;
+
+        if let Err(response) = self.run_middlewares(&mut request) {
+            return Ok(response);
+        }
+
         let (path, queries) = request.split_path();
         let segments: Vec<&str> = path.trim_start_matches('/').split('/').collect();
 
@@ -103,6 +138,12 @@ impl Server {
 
     pub fn route(&mut self, router: Router) -> &Self {
         self.routers.push(router);
+
+        self
+    }
+
+    pub fn use_middleware(&mut self, middleware: Middleware) -> &Self {
+        self.middlewares.push(Box::new(middleware));
 
         self
     }

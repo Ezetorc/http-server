@@ -33,14 +33,14 @@ impl Headers {
     }
 
     pub fn set_content_type(&mut self, content_type: ContentType) {
-        self.add(Self::CONTENT_TYPE, content_type.as_str());
+        self.set(Self::CONTENT_TYPE, content_type.as_str());
     }
 
     pub fn has(&self, header_name: &str) -> bool {
         self.headers.contains_key(header_name)
     }
 
-    pub fn add(&mut self, key: &str, value: &str) {
+    pub fn set(&mut self, key: &str, value: &str) {
         self.headers.insert(key.to_string(), value.to_string());
     }
 

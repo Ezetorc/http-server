@@ -63,6 +63,38 @@ impl Router {
         self.routes.push(Route::new(Method::Get, path, handler));
     }
 
+    pub fn on_post(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Post, path, handler));
+    }
+
+    pub fn on_put(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Put, path, handler));
+    }
+
+    pub fn on_delete(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Delete, path, handler));
+    }
+
+    pub fn on_patch(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Patch, path, handler));
+    }
+
+    pub fn on_head(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Head, path, handler));
+    }
+
+    pub fn on_options(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Options, path, handler));
+    }
+
+    pub fn on_connect(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Connect, path, handler));
+    }
+
+    pub fn on_trace(&mut self, path: &str, handler: RequestHandler) {
+        self.routes.push(Route::new(Method::Trace, path, handler));
+    }
+
     pub fn path(&self) -> String {
         self.path.trim_start_matches("/").to_string()
     }

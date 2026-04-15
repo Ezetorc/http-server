@@ -72,6 +72,21 @@ impl Request {
         }
     }
 
+    pub fn set_header(&mut self, key: &str, value: &str) {
+        self.headers.set(key, value);
+    }
+
+    pub fn get_header(&self, header_name: &str) -> Option<String> {
+        self.headers.get(header_name).cloned()
+    }
+
+    pub fn get_header_or_error(&self, header_name: &str) -> Result<String, Response> {
+        self.headers
+            .get(header_name)
+            .cloned()
+            .ok_or(Response::new(Status::BadRequest))
+    }
+
     pub fn version(&self) -> Version {
         self.version
     }

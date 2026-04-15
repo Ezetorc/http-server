@@ -72,7 +72,7 @@ impl Response {
     }
 
     pub fn with_header(mut self, key: &str, value: &str) -> Self {
-        self.headers.add(key, value);
+        self.headers.set(key, value);
         self
     }
 
